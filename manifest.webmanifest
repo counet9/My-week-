@@ -1,0 +1,14 @@
+{
+  "name": "Ma Semaine",
+  "short_name": "Ma Semaine",
+  "description": "Un planning hebdomadaire simple, synchronisé entre tes appareils.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f3f5f1",
+  "theme_color": "#15241d",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15241d">
+  <meta name="description" content="Ma Semaine — un planning hebdomadaire simple, synchronisé entre tes appareils.">
+  <title>Ma Semaine</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="preconnect" href="https://urfkbkagveecawwejjqq.supabase.co">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--bg:#f3f5f1;--surface:#fff;--ink:#192821;--muted:#7b887f;--line:#e1e8df;--green:#b9f36c;--green-strong:#a9e85c;--dark:#15241d;--pale:#eaf2e3;--red:#bd4439;--red-bg:#fff0e9;--shadow:0 12px 34px rgba(24,42,31,.045);--radius:21px}
+    *{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.45;-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button{cursor:pointer}button:disabled,input:disabled,select:disabled{opacity:.55;cursor:not-allowed}.shell{width:min(1036px,calc(100% - 36px));margin:25px auto 30px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}.brand{display:flex;align-items:center;gap:12px;min-width:0}.brand-icon{width:44px;height:44px;flex:0 0 auto;display:grid;place-items:center;border-radius:15px;background:var(--dark);box-shadow:0 4px 12px #17291f18}.brand-icon img{width:27px;height:27px}.brand h1{font-size:20px;line-height:1.15;margin:0;letter-spacing:-.6px}.brand p{font-size:12px;color:var(--muted);margin:4px 0 0}.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}.transition-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 13px;background:#e8efe4;color:#42634a;border:1px solid #dce7d7;border-radius:999px;font-size:12px;font-weight:750}.green-dot{width:7px;height:7px;background:#72b43f;border-radius:50%;display:inline-block}.btn{border:0;border-radius:13px;padding:12px 15px;font-weight:750;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s ease,filter .12s ease}.btn:active{transform:scale(.98)}.btn-primary{background:var(--green);color:#1b2a20}.btn-primary:hover{filter:brightness(.97)}.btn-dark{background:var(--dark);color:#fff}.btn-soft{background:#edf1eb;color:var(--ink)}.btn-outline{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn-danger{background:#fff1ee;color:#a43a31}.btn-small{padding:8px 11px;font-size:12px;border-radius:10px}.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.auth-panel{padding:16px 18px 17px;margin-bottom:17px}.auth-head{display:flex;align-items:center;justify-content:space-between;gap:16px}.auth-heading{display:flex;align-items:center;gap:11px;min-width:0}.cloud-icon{width:36px;height:36px;display:grid;place-items:center;background:#eff7e4;border-radius:12px;font-size:18px;flex:0 0 auto}.auth-heading h2{font-size:14px;margin:0;letter-spacing:-.2px}.auth-heading p{font-size:11.5px;margin:3px 0 0;color:var(--muted)}.status-badge{font-size:11.5px;font-weight:800;border-radius:999px;padding:7px 10px;background:#fff0dd;color:#9a5b14;white-space:nowrap}.status-badge.ok{background:#e7f6dc;color:#426c2e}.status-badge.wait{background:#edf1eb;color:#617067}.auth-divider{height:1px;background:#edf0eb;margin:14px 0}.auth-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto auto;gap:8px}.field{width:100%;min-width:0;border:1px solid #dfe6de;border-radius:12px;background:#fff;color:var(--ink);padding:11px 13px;outline:none;min-height:42px;font-size:13px}.field:focus{border-color:#9bcf6c;box-shadow:0 0 0 3px #b9f36c30}.field::placeholder{color:#a5ada7}.config-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0;background:transparent;border:0;color:#56695a;text-align:left;font-size:12.5px;font-weight:800}.config-toggle span:last-child{font-size:20px;line-height:1}.config-fields{display:grid;grid-template-columns:1fr 1.2fr auto;gap:8px;margin-top:12px;align-items:end}.field-label{display:block;font-size:11.5px;color:#647268;margin-bottom:5px;font-weight:750}.field-note{font-size:11px;color:var(--muted);margin:9px 0 0}.auth-message{font-size:12px;margin:10px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}.auth-message.error{color:var(--red)}.auth-message.success{color:#47783b}.auth-message.info{color:#647268}.logged-in-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.user-email{font-size:12px;color:#53645a;overflow-wrap:anywhere}.hero{position:relative;overflow:hidden;display:flex;justify-content:space-between;gap:24px;align-items:center;background:var(--dark);color:#fff;border-radius:28px;padding:27px 29px 25px;margin-bottom:0;min-height:226px}.hero:before{content:"";position:absolute;right:-92px;top:-179px;width:270px;height:270px;border:1px solid #7aab543c;border-radius:50%;box-shadow:0 0 0 28px #94c35b0a,0 0 0 65px #94c35b0b,0 0 0 100px #94c35b08;pointer-events:none}.hero-copy{position:relative;z-index:1;max-width:650px}.eyebrow{font-size:11px;font-weight:900;letter-spacing:2px;color:var(--green);text-transform:uppercase;margin-bottom:9px}.hero h2{font-size:clamp(28px,3.4vw,40px);line-height:1.09;letter-spacing:-1.7px;margin:0 0 10px}.hero-copy>p{font-size:14px;color:#c2cbc4;max-width:540px;margin:0 0 19px}.hero-bottom{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;font-weight:700;color:#e0e6df}.date-chip{background:#ffffff17;border:1px solid #ffffff0c;padding:6px 10px;border-radius:9px}.hero-progress{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:3px;flex:0 0 120px}.progress-ring{width:116px;height:116px;position:relative}.progress-ring svg{width:100%;height:100%;transform:rotate(-90deg)}.progress-track{fill:none;stroke:#55645b;stroke-width:7}.progress-value{fill:none;stroke:var(--green);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .3s}.progress-copy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.progress-copy strong{font-size:24px;line-height:1}.progress-copy span{font-size:10px;color:#c2ccc4;margin-top:5px}.progress-caption{font-size:11px;color:#a8b3aa}.week-switch{display:flex;align-items:center;gap:4px;background:#e9eee6;border:1px solid #e0e7dc;border-radius:16px;padding:5px;margin:0 0 17px}.week-tab{flex:1;min-width:0;border:0;text-align:left;background:transparent;color:#66756b;padding:10px 13px;border-radius:12px;font-size:13px;font-weight:850}.week-tab small{display:block;font-weight:650;color:#879389;font-size:10.5px;margin-top:2px}.week-tab.active{background:#fff;color:var(--ink);box-shadow:0 2px 8px #1b2d2010}.week-tab.active small{color:#617467}.history-shortcut{background:transparent;border:0;color:#647268;font-size:11.5px;font-weight:750;padding:8px 10px;white-space:nowrap}.history-nav{display:none;align-items:center;justify-content:space-between;gap:10px;margin:-3px 0 15px;padding:10px 12px;border:1px solid var(--line);background:#fff;border-radius:13px}.history-nav.visible{display:flex}.history-label{font-size:12px;font-weight:800;color:#5b6b60;text-align:center}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:28px}.stat-card{padding:15px 16px 14px;border-radius:18px;min-height:113px}.stat-label{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11.5px;font-weight:800}.stat-icon{width:27px;height:27px;display:grid;place-items:center;border-radius:9px;background:#edf4e8;color:#3f6044;font-size:15px}.stat-number{font-size:25px;font-weight:900;letter-spacing:-.6px;line-height:1.1;margin:10px 0 4px}.stat-hint{color:#829086;font-size:11.5px}.program-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:13px}.program-head h2{font-size:21px;letter-spacing:-.7px;margin:0 0 2px}.program-head p{font-size:12px;color:var(--muted);margin:0}.filter-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.search-wrap{position:relative;width:min(250px,100%)}.search-wrap .field{padding-left:30px}.search-mark{position:absolute;left:12px;top:11px;font-size:14px;color:#8a958c;pointer-events:none}.select-field{min-width:140px;width:auto}.filters-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:17px}.days-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:13px}.day-card{padding:14px 14px 13px;border-radius:22px;min-width:0}.day-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}.day-head h3{font-size:15px;letter-spacing:-.25px;margin:0}.day-date{font-size:11.5px;color:#849087;margin-top:2px}.day-count{background:#eef2ec;color:#4d5e52;font-size:10.5px;font-weight:850;border-radius:9px;padding:6px 8px;white-space:nowrap}.task-list{display:flex;flex-direction:column;gap:8px}.task-row{display:grid;grid-template-columns:23px minmax(0,1fr) auto;align-items:start;gap:10px;border:1px solid #e7ece6;border-radius:15px;padding:10px 9px;background:#fff;min-width:0}.task-row.completed{background:#fbfcfa}.task-row.completed .task-title{text-decoration:line-through;color:#8e9990}.task-check{appearance:none;-webkit-appearance:none;width:22px;height:22px;border:1.8px solid #bac5bb;border-radius:7px;background:#fff;margin:2px 0 0;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}.task-check:checked{border-color:#76b34d;background:#81bf51}.task-check:checked:after{content:"✓";font-size:15px;line-height:1;color:#fff;font-weight:900}.task-main{min-width:0}.task-title{font-size:12.5px;font-weight:800;line-height:1.35;overflow-wrap:anywhere;padding-top:2px}.task-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 7px;border-radius:6px;font-size:10px;font-weight:800;line-height:1.15;background:#f0f2ee;color:#6c786e}.tag.category-study{background:#dceeff;color:#375b83}.tag.category-sport{background:#edf7df;color:#426d31}.tag.category-life{background:#e9ddff;color:#65508b}.tag.category-work{background:#fce7dd;color:#8b5b42}.tag.category-rest{background:#f1efe6;color:#766d53}.tag.category-other{background:#edf0ed;color:#647168}.tag.priority{background:#ffe4df;color:#a94439}.task-actions{display:flex;align-items:center;gap:3px}.icon-button{display:grid;place-items:center;width:25px;height:25px;border:0;border-radius:7px;background:transparent;color:#8b968e;font-size:13px}.icon-button:hover{background:#f0f4ee;color:#283d2d}.icon-button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.empty-day{color:#9ba59e;font-size:11.5px;padding:8px 3px 4px}.empty-state{grid-column:1/-1;background:#fff;border:1px dashed #d8e2d5;border-radius:17px;padding:24px;text-align:center;color:#718075;font-size:13px}.quick-add{background:#edf4e7;border:1px solid #dce9d2;border-radius:22px;padding:15px 17px;margin-top:19px}.quick-add-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}.plus-bubble{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;background:var(--green);font-size:24px;font-weight:500}.quick-add h3{font-size:14px;margin:0 0 2px}.quick-add p{font-size:11.5px;color:#728071;margin:0}.quick-form{display:grid;grid-template-columns:minmax(0,1fr) 115px 145px auto;gap:8px}.footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #e4eae2;margin-top:24px;padding-top:17px;font-size:11px;color:#839087}.footer-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.text-button{background:transparent;border:0;padding:0;color:#687a6b;text-decoration:underline;text-underline-offset:3px;font-size:11px;font-weight:650}.error-banner{display:none;border:1px solid #ffd5cb;background:#fff3ef;color:#a33f35;padding:12px 14px;border-radius:13px;font-size:12px;margin:0 0 14px;white-space:pre-wrap;overflow-wrap:anywhere}.error-banner.visible{display:block}.loading-banner{display:none;background:#edf4e8;color:#536b53;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:12px}.loading-banner.visible{display:block}.modal-backdrop{position:fixed;inset:0;z-index:100;background:#10201785;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}.modal{width:min(510px,100%);max-height:min(90dvh,800px);overflow:auto;background:#fff;border-radius:23px;padding:22px;box-shadow:0 22px 80px #0b1b1160}.modal-top{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px}.modal-top h2{font-size:20px;letter-spacing:-.6px;margin:0}.modal-top p{font-size:12px;color:var(--muted);margin:4px 0 0}.modal-close{border:0;background:#f0f3ef;border-radius:10px;width:31px;height:31px;font-size:20px;color:#55665a}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.form-field.full{grid-column:1/-1}.form-field label{display:block;font-size:12px;font-weight:800;color:#5d6d61;margin-bottom:6px}.priority-toggle{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:750;color:#516355;padding:10px 0}.priority-toggle input{accent-color:#7fbb4b;width:16px;height:16px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.hidden{display:none!important}
+    @media(max-width:760px){.shell{width:min(100% - 24px,600px);margin:15px auto 24px}.topbar{align-items:flex-start}.brand h1{font-size:18px}.top-actions{gap:6px}.transition-pill{font-size:10px;padding:8px 9px}.top-actions .btn{padding:10px 12px}.hero{padding:24px 21px;border-radius:24px;gap:8px;min-height:190px}.hero-progress{flex-basis:90px}.progress-ring{width:88px;height:88px}.progress-copy strong{font-size:20px}.hero h2{font-size:29px}.hero-copy>p{font-size:12px}.stats{gap:8px}.stat-card{padding:12px;min-height:105px}.stat-number{font-size:23px}.stat-label{font-size:10.5px}.stat-icon{width:24px;height:24px}.program-head{align-items:flex-start;flex-direction:column}.filter-tools{width:100%;justify-content:flex-start}.search-wrap{width:100%;flex:1 1 190px}.select-field{flex:1 1 130px}.quick-form{grid-template-columns:minmax(0,1fr) 110px}.quick-form .btn{grid-column:1/-1}.footer{align-items:flex-start;flex-direction:column}.auth-controls{grid-template-columns:1fr 1fr}.auth-controls .btn{width:100%}.config-fields{grid-template-columns:1fr}.status-badge{font-size:10px}.auth-heading p{max-width:245px}}
+    @media(max-width:540px){.topbar{align-items:center}.brand{gap:9px}.brand-icon{width:39px;height:39px;border-radius:13px}.brand-icon img{width:24px;height:24px}.brand h1{font-size:17px}.brand p{font-size:10px}.top-actions{flex-direction:column;align-items:flex-end}.transition-pill{display:none}.top-actions .btn{padding:9px 10px;font-size:12px}.auth-panel{padding:13px}.auth-head{align-items:flex-start}.auth-heading{align-items:flex-start}.auth-heading p{font-size:10.5px}.auth-controls{grid-template-columns:1fr}.auth-controls .field{min-height:40px}.hero{padding:22px 17px;min-height:178px}.hero h2{font-size:26px;letter-spacing:-1px}.hero-copy>p{font-size:11.5px;margin-bottom:13px}.eyebrow{font-size:9px;letter-spacing:1.5px}.hero-progress{flex-basis:73px}.progress-ring{width:70px;height:70px}.progress-copy strong{font-size:17px}.progress-copy span{font-size:8px}.progress-caption{font-size:9px}.hero-bottom{font-size:10px;gap:6px}.date-chip{padding:5px 7px}.week-switch{gap:2px;padding:4px;margin-bottom:12px}.week-tab{font-size:11.5px;padding:9px 8px}.week-tab small{font-size:9px}.history-shortcut{font-size:10.5px;padding:7px 6px}.stats{gap:7px;margin-bottom:23px}.stat-card{padding:10px 9px;min-height:95px;border-radius:15px}.stat-label{gap:5px;font-size:9px}.stat-icon{width:21px;height:21px;border-radius:7px;font-size:12px}.stat-number{font-size:21px;margin:9px 0 3px}.stat-hint{font-size:9px}.program-head h2{font-size:19px}.program-head p{font-size:11px}.filters-row{margin-bottom:12px}.days-grid{grid-template-columns:1fr;gap:10px}.day-card{padding:13px;border-radius:18px}.task-row{padding:10px 8px;gap:8px}.task-title{font-size:12px}.tag{font-size:9.5px}.quick-add{padding:13px;border-radius:18px}.quick-form{grid-template-columns:minmax(0,1fr) 105px}.quick-form .field{font-size:12px;padding:10px}.form-grid{grid-template-columns:1fr}.form-field.full{grid-column:auto}.modal{padding:18px}.modal-top h2{font-size:18px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon"><img src="./icon.svg" alt=""></div>
+        <div><h1>Ma Semaine</h1><p>Études · Sport · Vie perso</p></div>
+      </div>
+      <div class="top-actions">
+        <span class="transition-pill"><span class="green-dot"></span> Transition automatique · lun. 00h</span>
+        <button class="btn btn-primary" id="openAddBtn" type="button">＋ Ajouter</button>
+      </div>
+    </header>
+
+    <section class="panel auth-panel" aria-labelledby="authTitle">
+      <div class="auth-head">
+        <div class="auth-heading">
+          <div class="cloud-icon" aria-hidden="true">☁️</div>
+          <div><h2 id="authTitle">Synchronisation iPhone ↔ iPad</h2><p>Connecte les deux appareils au même compte pour partager tes tâches et tes coches.</p></div>
+        </div>
+        <span class="status-badge" id="connectionBadge">Configuration requise</span>
+      </div>
+      <div class="auth-divider"></div>
+      <div id="signedOutControls">
+        <form id="loginForm" class="auth-controls">
+          <label class="sr-only" for="emailInput">Adresse e-mail</label>
+          <input class="field" id="emailInput" type="email" autocomplete="username" placeholder="Ton adresse e-mail" required>
+          <label class="sr-only" for="passwordInput">Mot de passe</label>
+          <input class="field" id="passwordInput" type="password" autocomplete="current-password" placeholder="Mot de passe" required minlength="6">
+          <button class="btn btn-primary" id="loginBtn" type="submit">Se connecter</button>
+          <button class="btn btn-soft" id="signupBtn" type="button">Créer un compte</button>
+        </form>
+        <p class="auth-message info" id="authMessage" role="status">Configure la clé publique Supabase une seule fois sur chaque appareil, puis connecte-toi avec le même compte.</p>
+        <div class="auth-divider"></div>
+        <button class="config-toggle" id="configToggle" type="button" aria-expanded="false" aria-controls="configFields"><span>Configurer Supabase (première utilisation)</span><span id="configPlus">＋</span></button>
+        <div class="config-fields hidden" id="configFields">
+          <div><label class="field-label" for="supabaseUrlInput">URL du projet Supabase</label><input class="field" id="supabaseUrlInput" type="url" inputmode="url" value="https://urfkbkagveecawwejjqq.supabase.co" placeholder="https://....supabase.co" autocapitalize="off" spellcheck="false"></div>
+          <div><label class="field-label" for="supabaseKeyInput">Clé publique / publishable key</label><input class="field" id="supabaseKeyInput" type="password" placeholder="sb_publishable_… ou ancienne clé anon" autocapitalize="off" spellcheck="false" autocomplete="off"></div>
+          <button class="btn btn-dark" id="saveConfigBtn" type="button">Enregistrer</button>
+        </div>
+        <p class="field-note">Utilise uniquement la clé publique (publishable/anon), jamais la clé secrète service_role. La même configuration doit être installée sur les deux appareils.</p>
+      </div>
+      <div id="signedInControls" class="logged-in-row hidden">
+        <span class="user-email" id="signedInEmail"></span>
+        <button class="btn btn-soft btn-small" id="signOutBtn" type="button">Se déconnecter</button>
+      </div>
+    </section>
+
+    <div class="error-banner" id="globalError" role="alert"></div>
+    <div class="loading-banner" id="loadingBanner" role="status">Chargement du planning…</div>
+
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        <div class="eyebrow">Ton planning hebdomadaire</div>
+        <h2 id="heroTitle">Une semaine bien organisée.</h2>
+        <p>Garde le cap sur tes cours, tes entraînements et tout ce que tu dois faire, au même endroit.</p>
+        <div class="hero-bottom"><span class="date-chip" id="heroDate">—</span><span id="heroHint">Prépare la semaine suivante à l'avance</span></div>
+      </div>
+      <div class="hero-progress" aria-label="Progression de la semaine">
+        <div class="progress-ring">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="progress-track" cx="50" cy="50" r="42"></circle><circle class="progress-value" id="progressCircle" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="263.89"></circle></svg>
+          <div class="progress-copy"><strong id="progressPercent">0%</strong><span>ACCOMPLI</span></div>
+        </div>
+        <span class="progress-caption" id="progressCaption">C'est parti</span>
+      </div>
+    </section>
+
+    <nav class="week-switch" aria-label="Choisir une semaine">
+      <button class="week-tab active" id="thisWeekTab" data-offset="0" type="button">Cette semaine<small id="thisWeekDate">—</small></button>
+      <button class="week-tab" id="nextWeekTab" data-offset="1" type="button">Semaine prochaine<small id="nextWeekDate">—</small></button>
+      <button class="history-shortcut" id="historyBtn" type="button">Historique ↗</button>
+    </nav>
+    <div class="history-nav" id="historyNav">
+      <button class="btn btn-outline btn-small" id="olderWeekBtn" type="button">← Précédente</button>
+      <div class="history-label" id="historyLabel">Historique</div>
+      <button class="btn btn-outline btn-small" id="newerWeekBtn" type="button">Suivante →</button>
+    </div>
+
+    <section class="stats" aria-label="Statistiques de la semaine">
+      <article class="panel stat-card"><div class="stat-label"><span class="stat-icon">✓</span>Terminées</div><div class="stat-number" id="doneCount">0</div><div class="stat-hint">Tâches cochées</div></article>
+      <article class="panel stat-card"><div class="stat-label"><span class="stat-icon">↗</span>À faire</div><div class="stat-number" id="todoCount">0</div><div class="stat-hint">Encore au programme</div></article>
+      <article class="panel stat-card"><div class="stat-label"><span class="stat-icon">★</span>Prioritaires</div><div class="stat-number" id="priorityCount">0</div><div class="stat-hint">À ne pas oublier</div></article>
+    </section>
+
+    <section aria-labelledby="programTitle">
+      <div class="program-head">
+        <div><h2 id="programTitle">Le programme</h2><p>Coche chaque tâche quand elle est terminée.</p></div>
+        <div class="filter-tools">
+          <label class="search-wrap"><span class="search-mark" aria-hidden="true">⌕</span><span class="sr-only">Rechercher une tâche</span><input class="field" id="searchInput" type="search" placeholder="Rechercher une tâche…"></label>
+          <label><span class="sr-only">Filtrer par priorité</span><select class="field select-field" id="priorityFilter"><option value="all">Toutes</option><option value="priority">Prioritaires</option><option value="todo">À faire</option><option value="done">Terminées</option></select></label>
+        </div>
+      </div>
+      <div class="filters-row">
+        <label><span class="sr-only">Filtrer par catégorie</span><select class="field select-field" id="categoryFilter"><option value="all">Toutes les catégories</option><option>Études</option><option>Sport</option><option>Vie perso</option><option>Travail</option><option>Repos</option><option>Autre</option></select></label>
+        <button class="btn btn-soft" id="resetFiltersBtn" type="button">Réinitialiser les filtres</button>
+      </div>
+      <div class="days-grid" id="daysGrid" aria-live="polite"></div>
+    </section>
+
+    <section class="quick-add" aria-labelledby="quickAddTitle">
+      <div class="quick-add-head"><div class="plus-bubble" aria-hidden="true">＋</div><div><h3 id="quickAddTitle">Ajouter une tâche ponctuelle</h3><p>Un devoir en plus, un rendez-vous ou une course à faire ? Ajoute-le ici.</p></div></div>
+      <form class="quick-form" id="quickAddForm">
+        <label class="sr-only" for="quickTitle">Nom de la tâche</label><input class="field" id="quickTitle" type="text" maxlength="180" placeholder="Ex. terminer les exercices de macro" required>
+        <label class="sr-only" for="quickDay">Jour</label><select class="field" id="quickDay"><option>Lundi</option><option>Mardi</option><option>Mercredi</option><option>Jeudi</option><option>Vendredi</option><option>Samedi</option><option>Dimanche</option></select>
+        <label class="sr-only" for="quickCategory">Catégorie</label><select class="field" id="quickCategory"><option>Autre</option><option>Études</option><option>Sport</option><option>Vie perso</option><option>Travail</option><option>Repos</option></select>
+        <button class="btn btn-dark" id="quickAddBtn" type="submit">Ajouter à la semaine</button>
+      </form>
+    </section>
+
+    <footer class="footer">
+      <span>La semaine avance automatiquement le lundi à 00h00. Les semaines passées restent dans l'historique.</span>
+      <div class="footer-actions">
+        <button class="text-button" id="exportBtn" type="button">Exporter une sauvegarde</button>
+        <button class="text-button" id="importBtn" type="button">Importer</button>
+        <input class="hidden" id="importFile" type="file" accept="application/json,.json">
+      </div>
+    </footer>
+  </main>
+
+  <div class="modal-backdrop" id="taskModalBackdrop" role="presentation">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-top"><div><h2 id="modalTitle">Ajouter une tâche</h2><p id="modalDescription">Choisis le jour et la fréquence de cette tâche.</p></div><button class="modal-close" id="closeModalBtn" type="button" aria-label="Fermer">×</button></div>
+      <form id="taskForm">
+        <div class="form-grid">
+          <div class="form-field full"><label for="taskTitleInput">Nom de la tâche</label><input class="field" id="taskTitleInput" type="text" maxlength="180" placeholder="Ex. TP de maths" required></div>
+          <div class="form-field"><label for="taskDayInput">Jour</label><select class="field" id="taskDayInput"><option>Lundi</option><option>Mardi</option><option>Mercredi</option><option>Jeudi</option><option>Vendredi</option><option>Samedi</option><option>Dimanche</option></select></div>
+          <div class="form-field"><label for="taskCategoryInput">Catégorie</label><select class="field" id="taskCategoryInput"><option>Études</option><option>Sport</option><option>Vie perso</option><option>Travail</option><option>Repos</option><option>Autre</option></select></div>
+          <div class="form-field full"><label for="taskFrequencyInput">Fréquence</label><select class="field" id="taskFrequencyInput"><option value="once">Cette semaine uniquement</option><option value="weekly">Chaque semaine (tâche permanente)</option></select></div>
+          <div class="form-field full"><label class="priority-toggle"><input id="taskPriorityInput" type="checkbox"> Marquer comme prioritaire ★</label></div>
+        </div>
+        <p class="field-note" id="recurrenceNote">Une tâche permanente s'affichera chaque semaine à partir de la semaine choisie. Sa coche sera indépendante pour chaque semaine.</p>
+        <div class="modal-actions"><button class="btn btn-soft" id="cancelModalBtn" type="button">Annuler</button><button class="btn btn-primary" id="saveTaskBtn" type="submit">Ajouter la tâche</button></div>
+      </form>
+    </section>
+  </div>
+
+  <script>
+  (() => {
+    'use strict';
+    const CONFIG_STORAGE_KEY = 'ma-semaine-v4-supabase-config';
+    const DAYS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+    const CATEGORIES = ['Études','Sport','Vie perso','Travail','Repos','Autre'];
+    const $ = (id) => document.getElementById(id);
+    const state = {
+      client: null, authSubscription: null, channel: null, user: null,
+      weekOffset: 0, selectedWeekKey: '', taskRows: [], recurringRows: [], displayTasks: [],
+      loading: false, realtimeTimer: null, pollTimer: null, observedCurrentWeek: '',
+      modal: { mode: 'add', kind: 'once', id: null },
+      search: '', category: 'all', priorityFilter: 'all'
+    };
+
+    function localDateKey(date) {
+      const y = date.getFullYear(); const m = String(date.getMonth()+1).padStart(2,'0'); const d = String(date.getDate()).padStart(2,'0');
+      return `${y}-${m}-${d}`;
+    }
+    function parseDateKey(key) { const [y,m,d] = key.split('-').map(Number); return new Date(y,m-1,d,12,0,0,0); }
+    function mondayOf(date) { const result = new Date(date.getFullYear(),date.getMonth(),date.getDate(),12,0,0,0); const weekday = (result.getDay()+6)%7; result.setDate(result.getDate()-weekday); return result; }
+    function dateForOffset(offset) { const d = mondayOf(new Date()); d.setDate(d.getDate() + offset*7); return d; }
+    function weekKeyForOffset(offset) { return localDateKey(dateForOffset(offset)); }
+    function shiftDate(date, days) { const d = new Date(date); d.setDate(d.getDate()+days); return d; }
+    function formatShortDate(date, includeYear=false) {
+      const opts = {day:'numeric',month:'short'}; if (includeYear) opts.year='numeric';
+      let text = new Intl.DateTimeFormat('fr-BE',opts).format(date).replace(/\.$/,'');
+      return text;
+    }
+    function formatRange(start, withYear=true) {
+      const end = shiftDate(start,6);
+      return `${formatShortDate(start,false)} – ${formatShortDate(end,withYear)}`;
+    }
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+    function normalizeDay(value) {
+      const raw = String(value ?? '').trim().toLocaleLowerCase('fr');
+      const map = {lundi:'Lundi',monday:'Lundi',mon:'Lundi',mardi:'Mardi',tuesday:'Mardi',tue:'Mardi',mercredi:'Mercredi',wednesday:'Mercredi',wed:'Mercredi',jeudi:'Jeudi',thursday:'Jeudi',thu:'Jeudi',vendredi:'Vendredi',friday:'Vendredi',fri:'Vendredi',samedi:'Samedi',saturday:'Samedi',sat:'Samedi',dimanche:'Dimanche',sunday:'Dimanche',sun:'Dimanche'};
+      return map[raw] || DAYS.find(d => d.toLocaleLowerCase('fr') === raw) || 'Lundi';
+    }
+    function normalizeCategory(value) {
+      const raw = String(value ?? 'Autre').trim().toLocaleLowerCase('fr');
+      if (raw.includes('étud') || raw.includes('etud') || raw.includes('cours')) return 'Études';
+      if (raw.includes('sport') || raw.includes('natation') || raw.includes('muscu')) return 'Sport';
+      if (raw.includes('person') || raw.includes('vie perso') || raw.includes('personnel')) return 'Vie perso';
+      if (raw.includes('travail') || raw.includes('job')) return 'Travail';
+      if (raw.includes('repos') || raw.includes('pause')) return 'Repos';
+      return CATEGORIES.includes(value) ? value : 'Autre';
+    }
+    function categoryClass(category) {
+      return ({'Études':'category-study','Sport':'category-sport','Vie perso':'category-life','Travail':'category-work','Repos':'category-rest','Autre':'category-other'})[normalizeCategory(category)] || 'category-other';
+    }
+    function setAuthMessage(message, type='info') {
+      const el = $('authMessage'); if (!el) return;
+      el.textContent = message; el.className = `auth-message ${type}`;
+    }
+    function setGlobalError(message='') {
+      const el = $('globalError'); el.textContent = message; el.classList.toggle('visible',Boolean(message));
+    }
+    function setLoading(value) {
+      state.loading = value; $('loadingBanner').classList.toggle('visible',value);
+      ['openAddBtn','quickAddBtn','exportBtn','importBtn'].forEach(id => { if ($(id)) $(id).disabled = value || !state.user; });
+    }
+    function setBadge(label,kind='') { const el=$('connectionBadge'); el.textContent=label; el.className=`status-badge${kind ? ' '+kind : ''}`; }
+    function readConfig() {
+      try { return JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || 'null'); } catch { return null; }
+    }
+    function normalizedUrl(value) { return String(value || '').trim().replace(/\/+$/,''); }
+    function clientReady() { return Boolean(state.client && state.user); }
+
+    async function initializeClient({showMessage=true}={}) {
+      const saved = readConfig();
+      if (!saved || !saved.url || !saved.key) {
+        state.client = null; state.user = null; renderAuth();
+        setBadge('Configuration requise');
+        if (showMessage) setAuthMessage('Renseigne l’URL Supabase et la clé publique, puis enregistre. Ensuite, connecte-toi avec ton compte existant.', 'info');
+        return;
+      }
+      if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+        setBadge('Supabase indisponible');
+        setAuthMessage('La bibliothèque Supabase ne s’est pas chargée. Vérifie ta connexion Internet puis recharge la page.', 'error');
+        return;
+      }
+      try {
+        if (state.channel && state.client) { try { await state.client.removeChannel(state.channel); } catch {} }
+        if (state.authSubscription) { try { state.authSubscription.unsubscribe(); } catch {} }
+        state.client = window.supabase.createClient(saved.url, saved.key, {
+          auth: {persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},
+          global: {headers:{'X-Client-Info':'ma-semaine-v4-stable'}}
+        });
+        const { data, error } = await state.client.auth.getSession();
+        if (error) throw error;
+        state.user = data.session?.user || null;
+        const authResult = state.client.auth.onAuthStateChange((_event, session) => {
+          state.user = session?.user || null;
+          window.setTimeout(async () => {
+            renderAuth();
+            if (state.user) { await loadWeekData(); subscribeRealtime(); startPolling(); }
+            else { state.taskRows=[]; state.recurringRows=[]; state.displayTasks=[]; stopPolling(); renderPlanner(); }
+          },0);
+        });
+        state.authSubscription = authResult.data?.subscription || null;
+        renderAuth();
+        if (state.user) {
+          await loadWeekData(); subscribeRealtime(); startPolling();
+          if (showMessage) setAuthMessage('Session restaurée. Les données sont chargées depuis Supabase.', 'success');
+        } else {
+          setBadge('Connexion requise');
+          if (showMessage) setAuthMessage('Configuration enregistrée. Connecte-toi avec ton compte Supabase existant.', 'success');
+          renderPlanner();
+        }
+      } catch (error) {
+        state.client = null; state.user = null; renderAuth();
+        setBadge('Erreur de configuration');
+        setAuthMessage(`Connexion à Supabase impossible : ${error?.message || error}. Vérifie l’URL et la clé publique.`, 'error');
+      }
+    }
+
+    function renderAuth() {
+      const signedIn = Boolean(state.user);
+      $('signedOutControls').classList.toggle('hidden',signedIn);
+      $('signedInControls').classList.toggle('hidden',!signedIn);
+      $('signedInEmail').textContent = signedIn ? `Connecté : ${state.user.email || 'compte Supabase'}` : '';
+      if (signedIn) setBadge('Connecté · synchronisé','ok');
+      else if (state.client) setBadge('Connexion requise');
+      else setBadge('Configuration requise');
+      const disabled = !signedIn || state.loading;
+      ['openAddBtn','quickAddBtn','exportBtn','importBtn'].forEach(id => { if ($(id)) $(id).disabled = disabled; });
+      renderPlanner();
+    }
+
+    async function saveSupabaseConfig() {
+      const url = normalizedUrl($('supabaseUrlInput').value);
+      const key = $('supabaseKeyInput').value.trim();
+      if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
+        setAuthMessage('L’URL doit ressembler à https://xxxx.supabase.co.', 'error'); return;
+      }
+      if (!key) { setAuthMessage('Colle la clé publique (publishable/anon) de ton projet Supabase.', 'error'); return; }
+      if (/service_role|secret/i.test(key.slice(0,50))) {
+        setAuthMessage('Cette clé semble secrète. Utilise la clé publishable/anon, jamais service_role.', 'error'); return;
+      }
+      try { localStorage.setItem(CONFIG_STORAGE_KEY,JSON.stringify({url,key})); }
+      catch { setAuthMessage('Impossible de sauvegarder la configuration dans ce navigateur.', 'error'); return; }
+      setAuthMessage('Configuration enregistrée sur cet appareil. Vérification de la session…','info');
+      await initializeClient({showMessage:true});
+    }
+
+    async function signIn(event) {
+      event?.preventDefault();
+      if (!state.client) { setAuthMessage('Configure d’abord l’URL et la clé publique Supabase.', 'error'); $('configFields').classList.remove('hidden'); $('configToggle').setAttribute('aria-expanded','true'); return; }
+      const email=$('emailInput').value.trim(); const password=$('passwordInput').value;
+      if (!email || !password) { setAuthMessage('Renseigne ton adresse e-mail et ton mot de passe.', 'error'); return; }
+      $('loginBtn').disabled=true; $('signupBtn').disabled=true; setAuthMessage('Connexion en cours…','info');
+      try {
+        const {error} = await state.client.auth.signInWithPassword({email,password});
+        if (error) throw error;
+        setAuthMessage('Connexion réussie. Chargement de ton planning…','success');
+      } catch (error) {
+        setAuthMessage(`Connexion refusée : ${error?.message || error}. Vérifie les identifiants et que la confirmation e-mail du compte est terminée.`, 'error');
+      } finally { $('loginBtn').disabled=false; $('signupBtn').disabled=false; }
+    }
+    async function signUp() {
+      if (!state.client) { setAuthMessage('Configure d’abord l’URL et la clé publique Supabase.', 'error'); $('configFields').classList.remove('hidden'); $('configToggle').setAttribute('aria-expanded','true'); return; }
+      const email=$('emailInput').value.trim(); const password=$('passwordInput').value;
+      if (!email || !password) { setAuthMessage('Renseigne une adresse e-mail et un mot de passe.', 'error'); return; }
+      if (password.length < 6) { setAuthMessage('Le mot de passe doit contenir au moins 6 caractères.', 'error'); return; }
+      $('signupBtn').disabled=true; $('loginBtn').disabled=true; setAuthMessage('Création du compte en cours…','info');
+      try {
+        const {data,error} = await state.client.auth.signUp({email,password});
+        if (error) throw error;
+        if (data.session) setAuthMessage('Compte créé et connecté.','success');
+        else setAuthMessage('Compte créé. Vérifie ta boîte e-mail pour confirmer l’adresse avant de te connecter.','success');
+      } catch(error) { setAuthMessage(`Création impossible : ${error?.message || error}`, 'error'); }
+      finally { $('signupBtn').disabled=false; $('loginBtn').disabled=false; }
+    }
+    async function signOut() {
+      if (!state.client) return;
+      const {error} = await state.client.auth.signOut();
+      if (error) setGlobalError(`Déconnexion impossible : ${error.message}`);
+      else { state.user=null; state.taskRows=[]; state.recurringRows=[]; state.displayTasks=[]; stopPolling(); renderAuth(); setGlobalError(''); }
+    }
+
+    function friendlyDbError(error) {
+      const msg=error?.message || String(error || 'Erreur inconnue');
+      const code=error?.code ? ` [${error.code}]` : '';
+      if (/row-level security|permission denied|not allowed/i.test(msg)) return `Accès aux données refusé${code} : ${msg}\nÀ vérifier dans Supabase : RLS et policies sur tasks et recurring_tasks (chaque ligne doit avoir user_id = auth.uid()).`;
+      if (/relation .* does not exist|could not find the table/i.test(msg)) return `Table absente${code} : ${msg}\nVérifie que les tables tasks et recurring_tasks existent dans le schéma public.`;
+      if (/column .* does not exist|schema cache/i.test(msg)) return `Structure de base de données incompatible${code} : ${msg}\nExécute le script schema.sql fourni, après avoir vérifié les policies existantes.`;
+      return `Erreur Supabase${code} : ${msg}`;
+    }
+    async function fetchAll(table) {
+      const rows=[]; const pageSize=1000; let from=0;
+      while (true) {
+        const {data,error}=await state.client.from(table).select('*').eq('user_id',state.user.id).order('created_at',{ascending:true}).range(from,from+pageSize-1);
+        if (error) throw error;
+        rows.push(...(data||[]));
+        if (!data || data.length<pageSize) break;
+        from += pageSize;
+      }
+      return rows;
+    }
+    function getVisibleTasksForWeek(weekKey,taskRows,recurringRows) {
+      const applicableRecurring=recurringRows.filter(row => !row.starts_on || String(row.starts_on).slice(0,10) <= weekKey);
+      const occurrenceRows=taskRows.filter(row => row.recurring_id);
+      const recurringDisplayed=applicableRecurring.map(row => {
+        const occurrence=occurrenceRows.find(item => String(item.recurring_id)===String(row.id));
+        return {
+          key:`r:${row.id}`,id:String(row.id),rowId:occurrence?.id || null,kind:'weekly',
+          title:row.title || '',day:normalizeDay(row.day),category:normalizeCategory(row.category),priority:Boolean(row.priority),completed:Boolean(occurrence?.completed),created_at:row.created_at||'',
+          hasOccurrence:Boolean(occurrence)
+        };
+      });
+      const oneTime=taskRows.filter(row => !row.recurring_id).map(row => ({
+        key:`t:${row.id}`,id:String(row.id),rowId:row.id,kind:'once',title:row.title||'',day:normalizeDay(row.day),category:normalizeCategory(row.category),priority:Boolean(row.priority),completed:Boolean(row.completed),created_at:row.created_at||''
+      }));
+      return [...recurringDisplayed,...oneTime].sort((a,b)=>{
+        const dayDiff=DAYS.indexOf(a.day)-DAYS.indexOf(b.day); if(dayDiff) return dayDiff;
+        return String(a.created_at).localeCompare(String(b.created_at));
+      });
+    }
+    async function loadWeekData({quiet=false}={}) {
+      if (!clientReady()) { renderPlanner(); return; }
+      if (state.loading && !quiet) return;
+      const weekKey=weekKeyForOffset(state.weekOffset); state.selectedWeekKey=weekKey;
+      if (!quiet) { setLoading(true); setGlobalError(''); }
+      try {
+        const [tasksResult,recurringResult]=await Promise.all([
+          state.client.from('tasks').select('*').eq('user_id',state.user.id).eq('week_start',weekKey).order('created_at',{ascending:true}),
+          state.client.from('recurring_tasks').select('*').eq('user_id',state.user.id).order('created_at',{ascending:true})
+        ]);
+        if(tasksResult.error) throw tasksResult.error;
+        if(recurringResult.error) throw recurringResult.error;
+        state.taskRows=tasksResult.data||[];
+        state.recurringRows=recurringResult.data||[];
+        state.displayTasks=getVisibleTasksForWeek(weekKey,state.taskRows,state.recurringRows);
+        renderPlanner();
+      } catch(error) {
+        setGlobalError(friendlyDbError(error));
+        state.taskRows=[]; state.recurringRows=[]; state.displayTasks=[]; renderPlanner();
+      } finally { if (!quiet) setLoading(false); }
+    }
+
+    function subscribeRealtime() {
+      if (!state.client || !state.user) return;
+      try {
+        if(state.channel) { state.client.removeChannel(state.channel).catch(()=>{}); }
+        state.channel=state.client.channel(`ma-semaine-${state.user.id}`)
+          .on('postgres_changes',{event:'*',schema:'public',table:'tasks',filter:`user_id=eq.${state.user.id}`},scheduleRealtimeReload)
+          .on('postgres_changes',{event:'*',schema:'public',table:'recurring_tasks',filter:`user_id=eq.${state.user.id}`},scheduleRealtimeReload)
+          .subscribe();
+      } catch { /* Le rafraîchissement au retour sur la page reste disponible si Realtime n'est pas activé. */ }
+    }
+    function scheduleRealtimeReload() {
+      window.clearTimeout(state.realtimeTimer);
+      state.realtimeTimer=window.setTimeout(()=>loadWeekData({quiet:true}),350);
+    }
+    function startPolling() {
+      stopPolling(); state.pollTimer=window.setInterval(()=>{ if(state.user && document.visibilityState==='visible') loadWeekData({quiet:true}); },20000);
+    }
+    function stopPolling() { if(state.pollTimer) window.clearInterval(state.pollTimer); state.pollTimer=null; }
+
+    function filteredTasks() {
+      const query=state.search.trim().toLocaleLowerCase('fr');
+      return state.displayTasks.filter(task => {
+        if(query && !String(task.title).toLocaleLowerCase('fr').includes(query)) return false;
+        if(state.category!=='all' && task.category!==state.category) return false;
+        if(state.priorityFilter==='priority' && (!task.priority || task.completed)) return false;
+        if(state.priorityFilter==='todo' && task.completed) return false;
+        if(state.priorityFilter==='done' && !task.completed) return false;
+        return true;
+      });
+    }
+    function iconMarkup(name) {
+      if(name==='edit') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>';
+      return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 10v6M14 10v6"/></svg>';
+    }
+    function taskMarkup(task) {
+      const completed=task.completed?' completed':'';
+      const check=task.completed?'checked':'';
+      const kindLabel=task.kind==='weekly'?'Chaque semaine':'Cette semaine';
+      const recurringTitle=task.kind==='weekly'?'Modifier la tâche permanente':'Modifier cette tâche';
+      const deleteTitle=task.kind==='weekly'?'Supprimer la récurrence':'Supprimer cette tâche';
+      return `<article class="task-row${completed}" data-task-key="${escapeHtml(task.key)}">
+        <input class="task-check" type="checkbox" data-action="toggle" data-kind="${task.kind}" data-id="${escapeHtml(task.id)}" ${check} aria-label="Marquer ${escapeHtml(task.title)} comme terminée">
+        <div class="task-main"><div class="task-title">${escapeHtml(task.title)}</div><div class="task-tags"><span class="tag ${categoryClass(task.category)}">${escapeHtml(task.category)}</span>${task.priority?'<span class="tag priority">Prioritaire ★</span>':''}<span class="tag">${escapeHtml(kindLabel)}</span></div></div>
+        <div class="task-actions"><button class="icon-button" type="button" data-action="edit" data-kind="${task.kind}" data-id="${escapeHtml(task.id)}" title="${escapeHtml(recurringTitle)}" aria-label="${escapeHtml(recurringTitle)}">${iconMarkup('edit')}</button><button class="icon-button" type="button" data-action="delete" data-kind="${task.kind}" data-id="${escapeHtml(task.id)}" title="${escapeHtml(deleteTitle)}" aria-label="${escapeHtml(deleteTitle)}">${iconMarkup('delete')}</button></div>
+      </article>`;
+    }
+    function renderPlanner() {
+      const displayedDate=parseDateKey(weekKeyForOffset(state.weekOffset));
+      $('heroDate').textContent=formatRange(displayedDate,true);
+      $('thisWeekDate').textContent=formatRange(dateForOffset(0),true);
+      $('nextWeekDate').textContent=formatRange(dateForOffset(1),true);
+      $('thisWeekTab').classList.toggle('active',state.weekOffset===0);
+      $('nextWeekTab').classList.toggle('active',state.weekOffset===1);
+      $('historyNav').classList.toggle('visible',state.weekOffset<0);
+      $('historyLabel').textContent=`${formatRange(displayedDate,true)} · Historique`;
+      $('heroHint').textContent=state.weekOffset===0?'La semaine suivante est déjà préparée ci-dessous':state.weekOffset===1?'Prépare tes tâches pour la semaine qui arrive':'Consultation d’une semaine passée';
+      const total=state.displayTasks.length; const done=state.displayTasks.filter(t=>t.completed).length; const todo=total-done; const priorities=state.displayTasks.filter(t=>t.priority&&!t.completed).length;
+      $('doneCount').textContent=String(done); $('todoCount').textContent=String(todo); $('priorityCount').textContent=String(priorities);
+      const pct=total?Math.round(done/total*100):0; $('progressPercent').textContent=`${pct}%`; $('progressCaption').textContent=total?(pct===100?'Semaine terminée':'Continue comme ça'):'C’est parti';
+      $('progressCircle').style.strokeDashoffset=String(263.89-(263.89*pct/100));
+      const visible=filteredTasks();
+      if(!state.user) {
+        $('daysGrid').innerHTML='<div class="empty-state">Connecte-toi à ton compte Supabase pour charger ton planning et synchroniser les tâches entre tes appareils.</div>';
+      } else {
+        $('daysGrid').innerHTML=DAYS.map((day,index)=>{
+          const dayDate=shiftDate(displayedDate,index);
+          const dayTasks=visible.filter(task=>task.day===day);
+          const dayAll=state.displayTasks.filter(task=>task.day===day);
+          const doneDay=dayAll.filter(task=>task.completed).length;
+          return `<section class="panel day-card"><div class="day-head"><div><h3>${day}</h3><div class="day-date">${formatShortDate(dayDate,false)}</div></div><span class="day-count">${doneDay}/${dayAll.length}</span></div><div class="task-list">${dayTasks.length?dayTasks.map(taskMarkup).join(''):(dayAll.length?'':(state.search||state.category!=='all'||state.priorityFilter!=='all'?'':'<div class="empty-day">Rien de prévu</div>'))}</div></section>`;
+        }).join('');
+        if(total===0 && (state.search || state.category!=='all' || state.priorityFilter!=='all')) $('daysGrid').insertAdjacentHTML('beforeend','<div class="empty-state">Aucune tâche ne correspond aux filtres.</div>');
+      }
+      const disabled=!state.user || state.loading;
+      $('openAddBtn').disabled=disabled; $('quickAddBtn').disabled=disabled; $('exportBtn').disabled=disabled; $('importBtn').disabled=disabled;
+      $('quickTitle').disabled=disabled; $('quickDay').disabled=disabled; $('quickCategory').disabled=disabled;
+    }
+
+    function openModal(task=null) {
+      if(!state.user) { setAuthMessage('Connecte-toi avant d’ajouter ou de modifier une tâche.','info'); $('emailInput').focus(); return; }
+      state.modal=task?{mode:'edit',kind:task.kind,id:task.id}:{mode:'add',kind:'once',id:null};
+      $('modalTitle').textContent=task?'Modifier une tâche':'Ajouter une tâche';
+      $('modalDescription').textContent=task?.kind==='weekly'?'Cette modification concernera la tâche permanente et ses prochaines occurrences.':task?'Cette modification ne concernera que cette semaine.':`Pour ${formatRange(parseDateKey(weekKeyForOffset(state.weekOffset)),true)}.`;
+      $('taskTitleInput').value=task?.title||'';
+      $('taskDayInput').value=task?.day||'Lundi';
+      $('taskCategoryInput').value=CATEGORIES.includes(task?.category)?task.category:'Autre';
+      $('taskFrequencyInput').value=task?.kind==='weekly'?'weekly':'once';
+      $('taskPriorityInput').checked=Boolean(task?.priority);
+      $('taskFrequencyInput').disabled=Boolean(task);
+      $('recurrenceNote').textContent=task?.kind==='weekly'?'Cette tâche est permanente : modifier ou supprimer son modèle affecte les prochaines semaines. Chaque semaine garde sa propre coche.':'Une tâche permanente s’affiche à partir de la semaine choisie. Sa coche reste indépendante pour chaque semaine.';
+      $('saveTaskBtn').textContent=task?'Enregistrer':'Ajouter la tâche';
+      $('taskModalBackdrop').classList.add('open');
+      window.setTimeout(()=>$('taskTitleInput').focus(),50);
+    }
+    function closeModal() { $('taskModalBackdrop').classList.remove('open'); }
+    function getTask(kind,id) { return state.displayTasks.find(task=>task.kind===kind && String(task.id)===String(id)); }
+    async function saveTask(event) {
+      event.preventDefault();
+      if(!clientReady()) { closeModal(); return; }
+      const title=$('taskTitleInput').value.trim(); const day=$('taskDayInput').value; const category=$('taskCategoryInput').value; const priority=$('taskPriorityInput').checked;
+      if(!title) { $('taskTitleInput').focus(); return; }
+      const frequency=$('taskFrequencyInput').value; const isEditing=state.modal.mode==='edit'; const kind=isEditing?state.modal.kind:frequency;
+      $('saveTaskBtn').disabled=true; $('saveTaskBtn').textContent='Enregistrement…'; setGlobalError('');
+      try {
+        if(isEditing && kind==='weekly') {
+          const {error}=await state.client.from('recurring_tasks').update({title,day,category,priority}).eq('id',state.modal.id).eq('user_id',state.user.id);
+          if(error) throw error;
+        } else if(isEditing) {
+          const {error}=await state.client.from('tasks').update({title,day,category,priority}).eq('id',state.modal.id).eq('user_id',state.user.id);
+          if(error) throw error;
+        } else if(frequency==='weekly') {
+          const {error}=await state.client.from('recurring_tasks').insert({user_id:state.user.id,title,day,category,priority,starts_on:weekKeyForOffset(state.weekOffset)});
+          if(error) throw error;
+        } else {
+          const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),title,day,category,priority,completed:false,recurring_id:null});
+          if(error) throw error;
+        }
+        closeModal(); await loadWeekData();
+      } catch(error) { setGlobalError(friendlyDbError(error)); }
+      finally { $('saveTaskBtn').disabled=false; $('saveTaskBtn').textContent=isEditing?'Enregistrer':'Ajouter la tâche'; }
+    }
+
+    async function toggleTask(kind,id,completed) {
+      if(!clientReady()) return;
+      setGlobalError('');
+      try {
+        if(kind==='weekly') {
+          const existing=state.taskRows.find(row=>String(row.recurring_id)===String(id));
+          const template=state.recurringRows.find(row=>String(row.id)===String(id));
+          if(!template) throw new Error('Cette tâche permanente n’existe plus. Recharge le planning.');
+          if(existing) {
+            const {error}=await state.client.from('tasks').update({completed}).eq('id',existing.id).eq('user_id',state.user.id);
+            if(error) throw error;
+          } else {
+            const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),day:normalizeDay(template.day),title:template.title,category:normalizeCategory(template.category),priority:Boolean(template.priority),completed,recurring_id:template.id});
+            if(error) throw error;
+          }
+        } else {
+          const {error}=await state.client.from('tasks').update({completed}).eq('id',id).eq('user_id',state.user.id);
+          if(error) throw error;
+        }
+        await loadWeekData({quiet:true});
+      } catch(error) { setGlobalError(friendlyDbError(error)); await loadWeekData({quiet:true}); }
+    }
+    async function deleteTask(kind,id) {
+      if(!clientReady()) return;
+      const task=getTask(kind,id); if(!task) return;
+      const confirmation=kind==='weekly'
+        ? `Supprimer définitivement la tâche permanente « ${task.title} » ? Elle ne réapparaîtra plus dans les semaines futures.`
+        : `Supprimer « ${task.title} » de la semaine ${formatRange(parseDateKey(weekKeyForOffset(state.weekOffset)),true)} ?`;
+      if(!window.confirm(confirmation)) return;
+      setGlobalError('');
+      try {
+        if(kind==='weekly') {
+          const {error:occError}=await state.client.from('tasks').delete().eq('user_id',state.user.id).eq('recurring_id',id);
+          if(occError) throw occError;
+          const {error}=await state.client.from('recurring_tasks').delete().eq('id',id).eq('user_id',state.user.id);
+          if(error) throw error;
+        } else {
+          const {error}=await state.client.from('tasks').delete().eq('id',id).eq('user_id',state.user.id);
+          if(error) throw error;
+        }
+        await loadWeekData();
+      } catch(error) { setGlobalError(friendlyDbError(error)); }
+    }
+    async function quickAdd(event) {
+      event.preventDefault();
+      if(!clientReady()) { setAuthMessage('Connecte-toi avant d’ajouter une tâche.','info'); return; }
+      const title=$('quickTitle').value.trim(); if(!title) return;
+      $('quickAddBtn').disabled=true;
+      try {
+        const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),title,day:$('quickDay').value,category:$('quickCategory').value,priority:false,completed:false,recurring_id:null});
+        if(error) throw error;
+        $('quickTitle').value=''; await loadWeekData();
+      } catch(error) { setGlobalError(friendlyDbError(error)); }
+      finally { $('quickAddBtn').disabled=!state.user; }
+    }
+
+    async function exportBackup() {
+      if(!clientReady()) return;
+      setGlobalError('');
+      try {
+        const [tasks,recurring]=await Promise.all([fetchAll('tasks'),fetchAll('recurring_tasks')]);
+        const payload={app:'Ma Semaine',format_version:4,exported_at:new Date().toISOString(),tasks,recurring_tasks:recurring};
+        const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`ma-semaine-sauvegarde-${localDateKey(new Date())}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        setAuthMessage('Sauvegarde exportée. Conserve le fichier dans un endroit sûr.','success');
+      } catch(error) { setGlobalError(friendlyDbError(error)); }
+    }
+    async function importBackupFile(file) {
+      if(!file || !clientReady()) return;
+      setGlobalError('');
+      try {
+        const data=JSON.parse(await file.text());
+        const incomingRecurring=Array.isArray(data.recurring_tasks)?data.recurring_tasks:(Array.isArray(data.recurringTasks)?data.recurringTasks:[]);
+        const incomingTasks=Array.isArray(data.tasks)?data.tasks:[];
+        if(!incomingRecurring.length&&!incomingTasks.length) throw new Error('Ce fichier ne contient pas de listes tasks / recurring_tasks reconnues. Une ancienne sauvegarde V3 peut avoir un format différent.');
+        if(!window.confirm(`Importer ${incomingTasks.length} tâche(s) et ${incomingRecurring.length} tâche(s) permanente(s) ? Les données seront fusionnées avec le planning actuel.`)) return;
+        const [existingTasks,existingRecurring]=await Promise.all([fetchAll('tasks'),fetchAll('recurring_tasks')]);
+        const existingTaskIds=new Set(existingTasks.map(row=>String(row.id)));
+        const existingRecurringIds=new Set(existingRecurring.map(row=>String(row.id)));
+        const recurrenceMap=new Map();
+        for(const item of incomingRecurring) {
+          const oldId=item.id==null?null:String(item.id);
+          const payload={user_id:state.user.id,title:String(item.title||item.name||'Tâche sans nom'),day:normalizeDay(item.day),category:normalizeCategory(item.category),priority:Boolean(item.priority)};
+          if(item.starts_on) payload.starts_on=String(item.starts_on).slice(0,10);
+          if(oldId && existingRecurringIds.has(oldId)) {
+            const {data:updated,error}=await state.client.from('recurring_tasks').update(payload).eq('id',oldId).eq('user_id',state.user.id).select('id').single();
+            if(error) throw error;
+            recurrenceMap.set(oldId,updated.id);
+          } else {
+            const {data:inserted,error}=await state.client.from('recurring_tasks').insert(payload).select('id').single();
+            if(error) throw error;
+            if(oldId) recurrenceMap.set(oldId,inserted.id);
+          }
+        }
+        let insertedOrUpdated=0;
+        for(const item of incomingTasks) {
+          const oldId=item.id==null?null:String(item.id); const incomingRecId=item.recurring_id==null?null:String(item.recurring_id);
+          const payload={user_id:state.user.id,week_start:String(item.week_start||weekKeyForOffset(0)).slice(0,10),day:normalizeDay(item.day),title:String(item.title||item.name||'Tâche sans nom'),category:normalizeCategory(item.category),priority:Boolean(item.priority),completed:Boolean(item.completed),recurring_id:incomingRecId?(recurrenceMap.get(incomingRecId)||incomingRecId):null};
+          if(oldId && existingTaskIds.has(oldId)) { const {error}=await state.client.from('tasks').update(payload).eq('id',oldId).eq('user_id',state.user.id); if(error) throw error; }
+          else { const {error}=await state.client.from('tasks').insert(payload); if(error) throw error; }
+          insertedOrUpdated++;
+        }
+        await loadWeekData(); setAuthMessage(`Import terminé : ${insertedOrUpdated} tâche(s) traitée(s) et ${incomingRecurring.length} tâche(s) permanente(s).`, 'success');
+      } catch(error) { setGlobalError(`Import impossible : ${friendlyDbError(error)}`); }
+      finally { $('importFile').value=''; }
+    }
+
+    function changeWeek(offset) { state.weekOffset=offset; state.selectedWeekKey=weekKeyForOffset(offset); state.taskRows=[]; state.recurringRows=[]; state.displayTasks=[]; renderPlanner(); if(state.user) loadWeekData(); }
+    function renderFilterState() { state.search=$('searchInput').value; state.category=$('categoryFilter').value; state.priorityFilter=$('priorityFilter').value; renderPlanner(); }
+
+    // Events
+    $('configToggle').addEventListener('click',()=>{const expanded=$('configToggle').getAttribute('aria-expanded')==='true';$('configToggle').setAttribute('aria-expanded',String(!expanded));$('configFields').classList.toggle('hidden',expanded);$('configPlus').textContent=expanded?'＋':'−';});
+    $('saveConfigBtn').addEventListener('click',saveSupabaseConfig);
+    $('loginForm').addEventListener('submit',signIn);
+    $('signupBtn').addEventListener('click',signUp);
+    $('signOutBtn').addEventListener('click',signOut);
+    $('thisWeekTab').addEventListener('click',()=>changeWeek(0));
+    $('nextWeekTab').addEventListener('click',()=>changeWeek(1));
+    $('historyBtn').addEventListener('click',()=>changeWeek(-1));
+    $('olderWeekBtn').addEventListener('click',()=>changeWeek(state.weekOffset-1));
+    $('newerWeekBtn').addEventListener('click',()=>changeWeek(Math.min(0,state.weekOffset+1)));
+    $('openAddBtn').addEventListener('click',()=>openModal());
+    $('closeModalBtn').addEventListener('click',closeModal); $('cancelModalBtn').addEventListener('click',closeModal);
+    $('taskModalBackdrop').addEventListener('click',(event)=>{if(event.target===$('taskModalBackdrop'))closeModal();});
+    document.addEventListener('keydown',(event)=>{if(event.key==='Escape')closeModal();});
+    $('taskForm').addEventListener('submit',saveTask);
+    $('quickAddForm').addEventListener('submit',quickAdd);
+    $('searchInput').addEventListener('input',renderFilterState);
+    $('categoryFilter').addEventListener('change',renderFilterState);
+    $('priorityFilter').addEventListener('change',renderFilterState);
+    $('resetFiltersBtn').addEventListener('click',()=>{$('searchInput').value='';$('categoryFilter').value='all';$('priorityFilter').value='all';renderFilterState();});
+    $('daysGrid').addEventListener('change',event=>{const target=event.target;if(target.matches('[data-action="toggle"]'))toggleTask(target.dataset.kind,target.dataset.id,target.checked);});
+    $('daysGrid').addEventListener('click',event=>{const button=event.target.closest('button[data-action]');if(!button)return;const {action,kind,id}=button.dataset;if(action==='edit'){const task=getTask(kind,id);if(task)openModal(task);}else if(action==='delete')deleteTask(kind,id);});
+    $('exportBtn').addEventListener('click',exportBackup);
+    $('importBtn').addEventListener('click',()=>$('importFile').click());
+    $('importFile').addEventListener('change',event=>importBackupFile(event.target.files?.[0]));
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state.user){const nowKey=weekKeyForOffset(0);if(nowKey!==state.observedCurrentWeek){state.observedCurrentWeek=nowKey;state.taskRows=[];state.recurringRows=[];state.displayTasks=[];renderPlanner();}loadWeekData({quiet:true});}});
+    window.addEventListener('focus',()=>{if(state.user)loadWeekData({quiet:true});});
+
+    // Date rollover watcher: keeps the two-week window correct if the page stays open across Monday 00:00.
+    state.observedCurrentWeek=weekKeyForOffset(0);
+    window.setInterval(()=>{const nowKey=weekKeyForOffset(0);if(nowKey!==state.observedCurrentWeek){state.observedCurrentWeek=nowKey;state.taskRows=[];state.recurringRows=[];state.displayTasks=[];renderPlanner();if(state.user)loadWeekData();}},30000);
+
+    // Load the saved per-device Supabase configuration and restore its session.
+    const savedConfig=readConfig();
+    if(savedConfig){$('supabaseUrlInput').value=savedConfig.url||$('supabaseUrlInput').value;$('supabaseKeyInput').value=savedConfig.key||'';$('configFields').classList.add('hidden');$('configToggle').setAttribute('aria-expanded','false');}
+    else {$('configFields').classList.remove('hidden');$('configToggle').setAttribute('aria-expanded','true');$('configPlus').textContent='−';}
+    renderPlanner();
+    initializeClient({showMessage:!savedConfig});
+    if('serviceWorker' in navigator && location.protocol==='https:') {
+      window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -7,8 +7,8 @@
   <meta name="description" content="Ma Semaine — un planning hebdomadaire simple, synchronisé entre tes appareils.">
   <title>Ma Semaine</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="preconnect" href="https://urfkbkagveecawwejjqq.supabase.co">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{--bg:#f3f5f1;--surface:#fff;--ink:#192821;--muted:#7b887f;--line:#e1e8df;--green:#b9f36c;--green-strong:#a9e85c;--dark:#15241d;--pale:#eaf2e3;--red:#bd4439;--red-bg:#fff0e9;--shadow:0 12px 34px rgba(24,42,31,.045);--radius:21px}
@@ -53,7 +53,7 @@
         <div class="auth-divider"></div>
         <button class="config-toggle" id="configToggle" type="button" aria-expanded="false" aria-controls="configFields"><span>Configurer Supabase (première utilisation)</span><span id="configPlus">＋</span></button>
         <div class="config-fields hidden" id="configFields">
-          <div><label class="field-label" for="supabaseUrlInput">URL du projet Supabase</label><input class="field" id="supabaseUrlInput" type="url" inputmode="url" value="https://urfkbkagveecawwejjqq.supabase.co" placeholder="https://....supabase.co" autocapitalize="off" spellcheck="false"></div>
+          <div><label class="field-label" for="supabaseUrlInput">URL du projet Supabase</label><input class="field" id="supabaseUrlInput" type="url" inputmode="url" value="" placeholder="Copie l’URL depuis ton projet Supabase" autocapitalize="off" spellcheck="false"></div>
           <div><label class="field-label" for="supabaseKeyInput">Clé publique / publishable key</label><input class="field" id="supabaseKeyInput" type="password" placeholder="sb_publishable_… ou ancienne clé anon" autocapitalize="off" spellcheck="false" autocomplete="off"></div>
           <button class="btn btn-dark" id="saveConfigBtn" type="button">Enregistrer</button>
         </div>
@@ -189,10 +189,21 @@
     function escapeHtml(value) {
       return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     }
+    // The database stores days as integers: Monday=0 ... Sunday=6.
+    // This is compatible with the original V3 schema, where `day` was numeric.
     function normalizeDay(value) {
       const raw = String(value ?? '').trim().toLocaleLowerCase('fr');
+      const numeric = /^-?\d+$/.test(raw) ? Number(raw) : NaN;
+      if (Number.isInteger(numeric)) {
+        if (numeric >= 0 && numeric <= 6) return DAYS[numeric];
+        if (numeric === 7) return 'Dimanche'; // legacy display fallback; SQL migration normalizes 1..7 where detectable
+      }
       const map = {lundi:'Lundi',monday:'Lundi',mon:'Lundi',mardi:'Mardi',tuesday:'Mardi',tue:'Mardi',mercredi:'Mercredi',wednesday:'Mercredi',wed:'Mercredi',jeudi:'Jeudi',thursday:'Jeudi',thu:'Jeudi',vendredi:'Vendredi',friday:'Vendredi',fri:'Vendredi',samedi:'Samedi',saturday:'Samedi',sat:'Samedi',dimanche:'Dimanche',sunday:'Dimanche',sun:'Dimanche'};
       return map[raw] || DAYS.find(d => d.toLocaleLowerCase('fr') === raw) || 'Lundi';
+    }
+    function dayToDb(value) {
+      const index = DAYS.indexOf(normalizeDay(value));
+      return index >= 0 ? index : 0;
     }
     function normalizeCategory(value) {
       const raw = String(value ?? 'Autre').trim().toLocaleLowerCase('fr');
@@ -229,7 +240,7 @@
       if (!saved || !saved.url || !saved.key) {
         state.client = null; state.user = null; renderAuth();
         setBadge('Configuration requise');
-        if (showMessage) setAuthMessage('Renseigne l’URL Supabase et la clé publique, puis enregistre. Ensuite, connecte-toi avec ton compte existant.', 'info');
+        if (showMessage) setAuthMessage('Copie l’URL et la clé publique depuis le même projet Supabase, enregistre, puis connecte-toi avec ton compte existant.', 'info');
         return;
       }
       if (!window.supabase || typeof window.supabase.createClient !== 'function') {
@@ -341,7 +352,8 @@
       const code=error?.code ? ` [${error.code}]` : '';
       if (/row-level security|permission denied|not allowed/i.test(msg)) return `Accès aux données refusé${code} : ${msg}\nÀ vérifier dans Supabase : RLS et policies sur tasks et recurring_tasks (chaque ligne doit avoir user_id = auth.uid()).`;
       if (/relation .* does not exist|could not find the table/i.test(msg)) return `Table absente${code} : ${msg}\nVérifie que les tables tasks et recurring_tasks existent dans le schéma public.`;
-      if (/column .* does not exist|schema cache/i.test(msg)) return `Structure de base de données incompatible${code} : ${msg}\nExécute le script schema.sql fourni, après avoir vérifié les policies existantes.`;
+      if (/invalid input syntax for type integer/i.test(msg) && /Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi|Dimanche/i.test(msg)) return `Format du jour incompatible${code} : la version du site envoyait un libellé au lieu du numéro de jour. Mets à jour index.html avec le paquet corrigé puis relance le script schema.sql.`;
+      if (/column .* does not exist|schema cache/i.test(msg)) return `Structure de base de données incompatible${code} : ${msg}\nExécute le script schema.sql fourni dans le même projet Supabase.`;
       return `Erreur Supabase${code} : ${msg}`;
     }
     async function fetchAll(table) {
@@ -501,16 +513,16 @@
       $('saveTaskBtn').disabled=true; $('saveTaskBtn').textContent='Enregistrement…'; setGlobalError('');
       try {
         if(isEditing && kind==='weekly') {
-          const {error}=await state.client.from('recurring_tasks').update({title,day,category,priority}).eq('id',state.modal.id).eq('user_id',state.user.id);
+          const {error}=await state.client.from('recurring_tasks').update({title,day:dayToDb(day),category,priority}).eq('id',state.modal.id).eq('user_id',state.user.id);
           if(error) throw error;
         } else if(isEditing) {
-          const {error}=await state.client.from('tasks').update({title,day,category,priority}).eq('id',state.modal.id).eq('user_id',state.user.id);
+          const {error}=await state.client.from('tasks').update({title,day:dayToDb(day),category,priority}).eq('id',state.modal.id).eq('user_id',state.user.id);
           if(error) throw error;
         } else if(frequency==='weekly') {
-          const {error}=await state.client.from('recurring_tasks').insert({user_id:state.user.id,title,day,category,priority,starts_on:weekKeyForOffset(state.weekOffset)});
+          const {error}=await state.client.from('recurring_tasks').insert({user_id:state.user.id,title,day:dayToDb(day),category,priority,starts_on:weekKeyForOffset(state.weekOffset)});
           if(error) throw error;
         } else {
-          const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),title,day,category,priority,completed:false,recurring_id:null});
+          const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),title,day:dayToDb(day),category,priority,completed:false,recurring_id:null});
           if(error) throw error;
         }
         closeModal(); await loadWeekData();
@@ -530,7 +542,7 @@
             const {error}=await state.client.from('tasks').update({completed}).eq('id',existing.id).eq('user_id',state.user.id);
             if(error) throw error;
           } else {
-            const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),day:normalizeDay(template.day),title:template.title,category:normalizeCategory(template.category),priority:Boolean(template.priority),completed,recurring_id:template.id});
+            const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),day:dayToDb(template.day),title:template.title,category:normalizeCategory(template.category),priority:Boolean(template.priority),completed,recurring_id:template.id});
             if(error) throw error;
           }
         } else {
@@ -550,7 +562,9 @@
       setGlobalError('');
       try {
         if(kind==='weekly') {
-          const {error:occError}=await state.client.from('tasks').delete().eq('user_id',state.user.id).eq('recurring_id',id);
+          // Keep historical task occurrences. Detach them from the recurring template,
+          // then remove only the template so it no longer appears in future weeks.
+          const {error:occError}=await state.client.from('tasks').update({recurring_id:null}).eq('user_id',state.user.id).eq('recurring_id',id);
           if(occError) throw occError;
           const {error}=await state.client.from('recurring_tasks').delete().eq('id',id).eq('user_id',state.user.id);
           if(error) throw error;
@@ -567,7 +581,7 @@
       const title=$('quickTitle').value.trim(); if(!title) return;
       $('quickAddBtn').disabled=true;
       try {
-        const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),title,day:$('quickDay').value,category:$('quickCategory').value,priority:false,completed:false,recurring_id:null});
+        const {error}=await state.client.from('tasks').insert({user_id:state.user.id,week_start:weekKeyForOffset(state.weekOffset),title,day:dayToDb($('quickDay').value),category:$('quickCategory').value,priority:false,completed:false,recurring_id:null});
         if(error) throw error;
         $('quickTitle').value=''; await loadWeekData();
       } catch(error) { setGlobalError(friendlyDbError(error)); }
@@ -599,7 +613,7 @@
         const recurrenceMap=new Map();
         for(const item of incomingRecurring) {
           const oldId=item.id==null?null:String(item.id);
-          const payload={user_id:state.user.id,title:String(item.title||item.name||'Tâche sans nom'),day:normalizeDay(item.day),category:normalizeCategory(item.category),priority:Boolean(item.priority)};
+          const payload={user_id:state.user.id,title:String(item.title||item.name||'Tâche sans nom'),day:dayToDb(item.day),category:normalizeCategory(item.category),priority:Boolean(item.priority)};
           if(item.starts_on) payload.starts_on=String(item.starts_on).slice(0,10);
           if(oldId && existingRecurringIds.has(oldId)) {
             const {data:updated,error}=await state.client.from('recurring_tasks').update(payload).eq('id',oldId).eq('user_id',state.user.id).select('id').single();
@@ -614,7 +628,7 @@
         let insertedOrUpdated=0;
         for(const item of incomingTasks) {
           const oldId=item.id==null?null:String(item.id); const incomingRecId=item.recurring_id==null?null:String(item.recurring_id);
-          const payload={user_id:state.user.id,week_start:String(item.week_start||weekKeyForOffset(0)).slice(0,10),day:normalizeDay(item.day),title:String(item.title||item.name||'Tâche sans nom'),category:normalizeCategory(item.category),priority:Boolean(item.priority),completed:Boolean(item.completed),recurring_id:incomingRecId?(recurrenceMap.get(incomingRecId)||incomingRecId):null};
+          const payload={user_id:state.user.id,week_start:String(item.week_start||weekKeyForOffset(0)).slice(0,10),day:dayToDb(item.day),title:String(item.title||item.name||'Tâche sans nom'),category:normalizeCategory(item.category),priority:Boolean(item.priority),completed:Boolean(item.completed),recurring_id:incomingRecId?(recurrenceMap.get(incomingRecId)||incomingRecId):null};
           if(oldId && existingTaskIds.has(oldId)) { const {error}=await state.client.from('tasks').update(payload).eq('id',oldId).eq('user_id',state.user.id); if(error) throw error; }
           else { const {error}=await state.client.from('tasks').insert(payload); if(error) throw error; }
           insertedOrUpdated++;
